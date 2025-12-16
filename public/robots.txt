@@ -1,0 +1,7 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# If you host a sitemap, uncomment and set your absolute URL:
+# Sitemap: https://your-domain.example.com/sitemap.xml
+

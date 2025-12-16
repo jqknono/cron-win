@@ -1,0 +1,51 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "deploy",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "label": "npm: deploy",
+      "detail": "cd cloudflare && npm run deploy"
+    },
+    {
+      "label": "App: build",
+      "type": "npm",
+      "script": "build",
+      "group": "build"
+    },
+    {
+      "label": "App: start (dev server)",
+      "type": "npm",
+      "script": "start",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Cloudflare: wrangler dev",
+      "type": "npm",
+      "script": "worker:dev",
+      "path": "cloudflare",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Build & Wrangler Dev",
+      "dependsOn": [
+        "App: build",
+        "Cloudflare: wrangler dev"
+      ],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

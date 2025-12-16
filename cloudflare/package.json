@@ -1,0 +1,42 @@
+{
+  "name": "cronwin-cloudflare-deployment",
+  "version": "1.0.0",
+  "description": "Cloudflare Workers deployment scripts for Windows Task Scheduler Generator",
+  "main": "deploy.js",
+  "scripts": {
+    "deploy": "node deploy.js",
+    "worker:dev": "wrangler d1 execute cronwin-stats --local --file=schema.sql && wrangler dev",
+    "db:init": "wrangler d1 execute cronwin-stats --local --file=schema.sql",
+    "worker:deploy": "wrangler deploy",
+    "logs": "wrangler tail",
+    "analytics": "wrangler analytics"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "deployment",
+    "react",
+    "static-site"
+  ],
+  "author": "Windows Task Scheduler Generator Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20231218.0",
+    "cross-env": "^10.1.0",
+    "wrangler": "^4.44.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/cron-win.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/cron-win/issues"
+  },
+  "homepage": "https://cronwin.techfetch.dev"
+}

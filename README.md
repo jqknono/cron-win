@@ -11,6 +11,7 @@ A React TypeScript application that generates XML configurations and import scri
 - 🔧 **Advanced Settings**: Configure privileges, power management, restart policies
 - 📱 **Responsive Design**: Works on desktop and mobile devices
 - 🎯 **Intuitive UI**: Clean, modern interface with collapsible output sections
+- 📈 **Usage tracking**: XML downloads are recorded in Cloudflare D1 (`cronwin-stats.downloads`); page views use the dedicated GA4 property `wincron` (`G-X9SWY9XJQQ` / `G-CEFCKBHQ59` / `G-SL4XBKRQ0Y` by hostname)
 
 ## Quick Start
 

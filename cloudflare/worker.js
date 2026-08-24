@@ -240,25 +240,46 @@ async function handleTrackDownload(request, env) {
     return new Response(null, { headers: corsHeaders });
   }
 
+  if (!env || !env.DB) {
+    return new Response(JSON.stringify({ error: 'Database unavailable' }), {
+      status: 503,
+      headers: {
+        'Content-Type': 'application/json',
+        ...corsHeaders
+      }
+    });
+  }
+
   const body = await request.json();
   await ensureDownloadsTable(env);
   const { taskName, appPath, repeatInterval, repeatIntervalUnit, triggerType, usePowershell, userAgent, language } = body;
 
-  const stmt = env.DB.prepare(`
-    INSERT INTO downloads (task_name, app_path, repeat_interval, repeat_interval_unit, trigger_type, use_powershell, user_agent, language, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
-  `);
+  try {
+    const stmt = env.DB.prepare(`
+      INSERT INTO downloads (task_name, app_path, repeat_interval, repeat_interval_unit, trigger_type, use_powershell, user_agent, language, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+    `);
 
-  await stmt.bind(
-    taskName || '',
-    appPath || '',
-    repeatInterval || '',
-    repeatIntervalUnit || '',
-    triggerType || '',
-    usePowershell ? 1 : 0,
-    userAgent || '',
-    language || ''
-  ).run();
+    await stmt.bind(
+      taskName || '',
+      appPath || '',
+      repeatInterval || '',
+      repeatIntervalUnit || '',
+      triggerType || '',
+      usePowershell ? 1 : 0,
+      userAgent || '',
+      language || ''
+    ).run();
+  } catch (err) {
+    console.error('Failed to insert download record', err);
+    return new Response(JSON.stringify({ error: 'Failed to record download' }), {
+      status: 503,
+      headers: {
+        'Content-Type': 'application/json',
+        ...corsHeaders
+      }
+    });
+  }
 
   return new Response(JSON.stringify({ success: true }), {
     headers: {
@@ -313,24 +334,34 @@ async function handleAdminStats(request, env) {
     });
   }
 
+  if (!env || !env.DB) {
+    return new Response('Database unavailable', { status: 503 });
+  }
+
   await ensureDownloadsTable(env);
 
   const page = parseInt(url.searchParams.get('page') || '1', 10);
   const pageSize = 100;
   const offset = (page - 1) * pageSize;
 
-  // 获取总数
-  const countResult = await env.DB.prepare('SELECT COUNT(*) as total FROM downloads').first();
-  const total = countResult?.total || 0;
-  const totalPages = Math.ceil(total / pageSize);
+  let total = 0;
+  let results = [];
+  try {
+    const countResult = await env.DB.prepare('SELECT COUNT(*) as total FROM downloads').first();
+    total = countResult?.total || 0;
+    const queryResult = await env.DB.prepare(`
+      SELECT id, task_name, app_path, repeat_interval, repeat_interval_unit, trigger_type, use_powershell, user_agent, language, created_at
+      FROM downloads
+      ORDER BY created_at DESC
+      LIMIT ? OFFSET ?
+    `).bind(pageSize, offset).all();
+    results = queryResult?.results || [];
+  } catch (err) {
+    console.error('Failed to query download stats', err);
+    return new Response('Database unavailable', { status: 503 });
+  }
 
-  // 获取分页数据
-  const { results } = await env.DB.prepare(`
-    SELECT id, task_name, app_path, repeat_interval, repeat_interval_unit, trigger_type, use_powershell, user_agent, language, created_at
-    FROM downloads
-    ORDER BY created_at DESC
-    LIMIT ? OFFSET ?
-  `).bind(pageSize, offset).all();
+  const totalPages = Math.ceil(total / pageSize);
 
   const html = generateAdminHTML(results, page, totalPages, total);
 

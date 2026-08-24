@@ -4,8 +4,8 @@
 
 ## 关键文件
 
-- `cloudflare/worker.js`：Worker 入口（静态资源从 `ASSETS` 读取，API 使用 D1 记录下载统计）
-- `cloudflare/wrangler.toml`：Wrangler 配置（`assets` + D1 绑定）
+- `cloudflare/worker.js`：Worker 入口（静态资源从 `ASSETS` 读取，API 使用 D1 `cronwin-stats.downloads` 记录下载统计）
+- `cloudflare/wrangler.toml`：Wrangler 配置（`assets` + D1 绑定 `DB`）
 - `cloudflare/deploy.js`：一键部署（构建 + `wrangler deploy`）
 - `cloudflare/schema.sql`：D1 表结构
 

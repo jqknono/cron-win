@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Edit, Check, X, AlertCircle, Info } from 'lucide-react';
 import { ScheduledTaskImportInfo } from '../utils/taskGenerator';
+import { trackEvent } from '../utils/analytics';
 
 interface ImportCommandCardProps {
   importInfo: ScheduledTaskImportInfo;
@@ -112,6 +113,13 @@ export const XmlConfigCard: React.FC<XmlConfigCardProps> = ({ xmlContent, taskNa
       body: JSON.stringify(payload)
     }).catch(() => {
       // 静默失败，不影响用户体验
+    });
+
+    trackEvent('download_xml', {
+      task_name: taskName,
+      trigger_type: taskConfig?.triggerType || '',
+      language: i18n.language,
+      use_powershell: usePowershell ? 1 : 0
     });
   };
 

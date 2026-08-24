@@ -149,7 +149,7 @@ function deployWorker() {
   console.log('部署 Worker...');
   try {
     process.chdir(repoRoot);
-    execCommand('wrangler deploy -c cloudflare/wrangler.toml', { env: getSanitizedWranglerEnv() });
+    execCommand('wrangler deploy -c cloudflare/wrangler.toml --keep-vars', { env: getSanitizedWranglerEnv() });
     console.log('Worker 部署完成');
   } catch (error) {
     console.error('Worker 部署失败:', error.message);

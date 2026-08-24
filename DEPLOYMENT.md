@@ -26,12 +26,14 @@ cp .env.example .env
 npm run deploy
 ```
 
-`npm run deploy` 会执行 `cloudflare/deploy.js`：安装根目录依赖、构建 `build/`，然后运行 `wrangler deploy -c cloudflare/wrangler.toml`。
+`npm run deploy` 会执行 `cloudflare/deploy.js`：安装根目录依赖、构建 `build/`，然后运行 `wrangler deploy -c cloudflare/wrangler.toml --keep-vars`（保留控制台已有 vars，如 `ADMIN_SECRET`）。
 
 ## 配置要点
 
 - 静态资源：`cloudflare/wrangler.toml` 中 `assets = { directory = "../build", binding = "ASSETS" }`
-- 数据库：`cloudflare/wrangler.toml` 中 D1 绑定 `DB`，建表脚本见 `cloudflare/schema.sql`
+- 自定义域名：`cronwin.techfetch.dev`、`wincron.techfetch.dev`、`taskscheduler.techfetch.dev`（写在 `wrangler.toml` 的 `routes`，发布时用 `--keep-vars`）
+- 数据库：`cloudflare/wrangler.toml` 中 D1 绑定 `DB`，库名 `cronwin-stats`，建表脚本见 `cloudflare/schema.sql`
+- 前端统计：独立 GA4 property `wincron`（`510153466`）。生产默认 `REACT_APP_GA_MEASUREMENT_ID=G-X9SWY9XJQQ`（`cronwin.techfetch.dev`）；`wincron.techfetch.dev` 用 `G-CEFCKBHQ59`，`taskscheduler.techfetch.dev` 用 `G-SL4XBKRQ0Y`
 - 管理页：如需启用 `/admin/stats`，请设置 Worker Secret `ADMIN_SECRET`（推荐 `wrangler secret put ADMIN_SECRET`），避免将密钥写入配置文件或提交到仓库
 
 ## 常用命令（cloudflare/）

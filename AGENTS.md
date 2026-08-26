@@ -19,3 +19,9 @@ TypeScript 与 JSX 文件使用 2 空格缩进，导入顺序建议由外到内�
 
 ## 安全与配置提示
 开发环境变量存放于 `.env.development.local`，勿将敏感凭证提交版本库。任务计划导出的命令涉及执行路径，测试前确认 Windows 环境具备相应权限。若新增外部依赖，请先评估许可协议并更新 `package-lock.json`。
+
+## 使用记录与分析
+- 下载明细：Cloudflare D1 `cronwin-stats` 表 `downloads`；Worker `POST /api/track-download`，管理页 `/admin/stats`。
+- 页面访问：GA4 property `techfetch.dev / wincron`（`properties/510153466`）。三个域名各有独立 Measurement ID，映射在 `src/utils/analytics.ts`。
+- 发布 Worker 用 `wrangler deploy -c cloudflare/wrangler.toml --keep-vars`，并保持 `routes` 覆盖三个自定义域名。
+- 不要把 AdGuard 的 `G-W6PMMZECGL` 当成本站 GA。D1 / GA 细节见 jqknono skills：`jqknono-cloudflare`、`jqknono-google-analytics`。
